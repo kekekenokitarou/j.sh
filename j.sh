@@ -16,11 +16,12 @@ if [[ $TYPE == "run" ]] ; then
         exit 1
     fi
     CLASS=${2%.java}
-    if ! javac "${CLASS}.java" ; then
+    OUT_DIR=.jbuild
+    if ! javac -d "${OUT_DIR}" -sourcepath . "${CLASS}.java" ; then
         echo "エラー : ${CLASS}.java のコンパイルに失敗しました。" >&2
         exit 1
     fi
-    exec java "${CLASS}"
+    exec java -cp "${OUT_DIR}" "${CLASS}"
 fi
 
 if [[ $TYPE == "main" ]] ; then
