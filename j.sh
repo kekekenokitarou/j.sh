@@ -31,6 +31,11 @@ else
     exit 1
 fi
 
+if [[ -e "${CLASS}.java" ]] ; then
+    echo "エラー : ${CLASS}.java はすでに存在します。上書きしません。" >&2
+    exit 1
+fi
+
 echo "${SCRIPT}" > "${CLASS}.java"
 
-echo "[$(date '+%y-%m-%d %H:%M:%S')] ${CLASS}.java"を出力しました。
+echo "${CLASS}.javaを出力しました。"
