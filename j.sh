@@ -1,41 +1,44 @@
 #!/usr/bin/env bash
 
-if [[ $# -ne 2 ]] ; then
-    echo "使い方 : $0 形式 クラス名(形式がmainの場合は、課題番号。runの場合は、ファイル名(〜.java))"
+if [[ $# -lt 2 ]] ; then
+    echo "使い方 : $0 形式 クラス名 [Javaへの引数...]"
     exit 1
 fi
 
 declare SCRIPT
 declare CLASS
 TYPE=$1
-
+TARGET=$2
 
 if [[ $TYPE == "run" ]] ; then
-    if [[ $2 != *.java || $2 == */* || ! -f $2 ]] ; then
-        echo "エラー : カレントディレクトリに $2 が見つかりません。ファイル名(〜.java)で指定してください。" >&2
+    if [[ $TARGET != *.java || $TARGET == */* || ! -f $TARGET ]] ; then
+        echo "エラー : カレントディレクトリに $TARGET が見つかりません。ファイル名(〜.java)で指定してください。" >&2
         exit 1
     fi
-    CLASS=${2%.java}
+    CLASS=${TARGET%.java}
     OUT_DIR=.jbuild
     if ! javac -d "${OUT_DIR}" -sourcepath . "${CLASS}.java" ; then
         echo "エラー : ${CLASS}.java のコンパイルに失敗しました。" >&2
         exit 1
     fi
-    exec java -cp "${OUT_DIR}" "${CLASS}"
+    
+    shift 2
+    
+    exec java -cp "${OUT_DIR}" "${CLASS}" "$@"
 fi
 
 if [[ $TYPE == "main" ]] ; then
-    CLASS=Kadai$2
+    CLASS=Kadai$TARGET
     SCRIPT="public class $CLASS{
     public static void main(String[] args){
     }
 }"
 elif [[ $TYPE == "class" ]] ; then
-    CLASS=$2
+    CLASS=$TARGET
     SCRIPT="public class $CLASS{
 }"
 elif [[ $TYPE == "con" ]] ; then
-    CLASS=$2
+    CLASS=$TARGET
     SCRIPT="public class $CLASS{
     public $CLASS(){
     }
